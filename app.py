@@ -40,7 +40,7 @@ def load_data_set():
 # API - Routing
 # ----------------------------------------------------------------------------------------------------------------------
 
-@app.route("/", methods=['GET'])
+@app.route("/getData", methods=['GET'])
 def index():
     return jsonify(load_data_set())
 
