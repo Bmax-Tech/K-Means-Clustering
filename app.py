@@ -1,5 +1,6 @@
 from flask import Flask, jsonify
 from openpyxl import load_workbook
+import algorithm
 
 app = Flask(__name__)
 
@@ -42,7 +43,9 @@ def load_data_set():
 
 @app.route("/getData", methods=['GET'])
 def index():
-    return jsonify(load_data_set())
+    algorithm.cluster_results()
+    # return jsonify(load_data_set())
+    return "ok"
 
 
 if __name__ == "__main__":
