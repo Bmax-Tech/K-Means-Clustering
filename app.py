@@ -1,6 +1,7 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from openpyxl import load_workbook
 import algorithm
+import numpy as np
 
 app = Flask(__name__)
 
@@ -41,11 +42,22 @@ def load_data_set():
 # API - Routing
 # ----------------------------------------------------------------------------------------------------------------------
 
-@app.route("/getData", methods=['GET'])
+@app.route("/getData", methods=['POST'])
 def index():
-    algorithm.cluster_results()
-    # return jsonify(load_data_set())
-    return "ok"
+    data_points, sample_preds = algorithm.cluster_results(request.json)
+    res = {}
+    res['sample_preds'] = []
+    res['data_points'] = []
+    for i, point in enumerate(data_points):
+        temp = {}
+        temp['x'] = point[0]
+        temp['y'] = point[1]
+        res['data_points'].append(temp)
+
+    for i, pred in enumerate(sample_preds):
+        res['sample_preds'].append(np.int32(pred).item())
+
+    return jsonify(res)
 
 
 if __name__ == "__main__":

@@ -7,7 +7,7 @@ from sklearn.decomposition import PCA
 from collections import Counter
 
 
-def cluster_results():
+def cluster_results(cluster_type):
     try:
         data = pd.read_csv('data/data_set_3.csv')
         data.drop(['Region', 'Channel'], axis=1, inplace=True)
@@ -95,7 +95,7 @@ def cluster_results():
             score = utility.score_clustering(reduced_data, num_clusters, pca_samples)
             print("num_clusters: {} - score: {}".format(num_clusters, score))
 
-        preds, centers, sample_preds = utility.cluster(reduced_data, 2, pca_samples)
+        preds, centers, sample_preds = utility.cluster(reduced_data, cluster_type['id'], pca_samples)
 
         # Implement Data Recovery
 
@@ -110,8 +110,8 @@ def cluster_results():
         display(true_centers)
 
         # Display the predictions
-        for i, pred in enumerate(sample_preds):
-            print("Sample points", i, "predicate to be in cluster", pred)
+        # for i, pred in enumerate(sample_preds):
+        #     print("Sample points", i, "predicate to be in cluster", pred)
 
         return data_points.get_values(), sample_preds
     except:
