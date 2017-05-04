@@ -16,7 +16,7 @@ def cluster_results(cluster_type):
         display(data.describe())
 
         # selected few data samples from dataset to further analysis
-        indices = [40, 80, 150]
+        indices = [10, 80, 250]
 
         # Create Dataframes for the selected samples
         samples = pd.DataFrame(data.loc[indices], columns=data.keys()).reset_index(drop=True)
