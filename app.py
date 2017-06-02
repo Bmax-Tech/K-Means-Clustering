@@ -1,41 +1,8 @@
 from flask import Flask, jsonify, request
-from openpyxl import load_workbook
 import algorithm
 import numpy as np
 
 app = Flask(__name__)
-
-
-# ----------------------------------------------------------------------------------------------------------------------
-# Custom Functions
-# ----------------------------------------------------------------------------------------------------------------------
-
-def load_data_set():
-    # main array
-    data_array = []
-    # load xlsx data set
-    wb = load_workbook('data/data_set_2.xlsx')
-    print(wb.sheetnames)
-    for val in wb.sheetnames:
-        ws = wb.get_sheet_by_name(val)
-        heading = False
-        headings = []
-        for row in ws.iter_rows():
-            # local array
-            temp_1 = []
-            for cell in row:
-                cell_content = str(cell.value)
-                temp_1.append(cell_content)
-            if not heading:
-                headings = temp_1
-            else:
-                # set key value pairs
-                data = {}
-                for x in range(len(headings)):
-                    data[headings[x]] = temp_1[x]
-                data_array.append(data)
-            heading = True
-    return data_array
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -44,18 +11,26 @@ def load_data_set():
 
 @app.route("/getData", methods=['POST'])
 def index():
-    data_points, sample_preds = algorithm.cluster_results(request.json)
+    plot_data, centers = algorithm.cluster_results(request.json)
     res = {}
-    res['sample_preds'] = []
+    res['center_points'] = []
     res['data_points'] = []
-    for i, point in enumerate(data_points):
+    # for i, clusters in plot_data.groupby('Cluster'):
+    count = 1
+    for cluster in plot_data.get_values():
         temp = {}
-        temp['x'] = point[0]
-        temp['y'] = point[1]
+        temp['item_no'] = count
+        temp['cluster'] = np.int32(cluster[0]).item()
+        temp['x'] = cluster[1]
+        temp['y'] = cluster[2]
         res['data_points'].append(temp)
+        count = count + 1
 
-    for i, pred in enumerate(sample_preds):
-        res['sample_preds'].append(np.int32(pred).item())
+    for j, center in enumerate(centers):
+        temp = {}
+        temp['x'] = center[0]
+        temp['y'] = center[1]
+        res['center_points'].append(temp)
 
     return jsonify(res)
 
@@ -63,5 +38,5 @@ def index():
 if __name__ == "__main__":
     app.run(
         host="127.0.0.1",
-        port=int(7890)
+        port=int(7891)
     )
