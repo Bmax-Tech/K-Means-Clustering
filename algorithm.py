@@ -3,13 +3,21 @@ import pandas as pd
 import utility.utility as utility
 import itertools as itr
 from sklearn.mixture import GaussianMixture
-
+from sklearn.svm import SVC
 from IPython.display import display
 from sklearn.decomposition import PCA
+
+# global variables
+g_pre_cluster_type = None
+g_log_data = None
+g_plot_data = None
+g_duplicate_list = None
 
 
 def cluster_results(cluster_type):
     try:
+        global g_pre_cluster_type
+        g_pre_cluster_type = cluster_type
         data = pd.read_csv('data/data_set_3.csv')
         data.drop(['Region', 'Channel'], axis=1, inplace=True)
         print("Wholesale customer dataset has {} samples with {} features each.".format(*data.shape))
@@ -29,6 +37,9 @@ def cluster_results(cluster_type):
 
         # Scale the data using the natural logarithm
         log_data = np.log(data)
+        # set global data set to be used in prediction
+        global g_log_data
+        g_log_data = log_data
         # Scale the sample data using the natural logarithm
         log_samples = np.log(samples)
         # Select the indices for data points you wish to remove
@@ -54,12 +65,14 @@ def cluster_results(cluster_type):
         unique_outliers = list(set(outliers))
         # List of duplicate outliers
         dup_outliers = list(set([x for x in outliers if outliers.count(x) > 1]))
+        # Set duplicate list for global use
+        global g_duplicate_list
+        g_duplicate_list = dup_outliers
         print('Outliers list:\n', unique_outliers)
         print('Length of outliers list:\n', len(unique_outliers))
         print('Duplicate list:\n', dup_outliers)
         print('Length of duplicates list:\n', len(dup_outliers))
         # Remove duplicate outliers
-        # Only 5 specified
         good_data = log_data.drop(log_data.index[dup_outliers]).reset_index(drop=True)
         # Original Data
         print('Original shape of data:\n', data.shape)
@@ -83,6 +96,7 @@ def cluster_results(cluster_type):
         cluster = GaussianMixture(n_components=cluster_type['id']).fit(reduced_data)
         predictions = cluster.predict(reduced_data)
         centers = cluster.means_
+
         # Display the results of the clustering from implementation
         utility.cluster_results(reduced_data, predictions, centers, pca_samples)
 
@@ -92,7 +106,32 @@ def cluster_results(cluster_type):
         predictions = pd.DataFrame(predictions, columns=['Cluster'])
         plot_data = pd.concat([predictions, reduced_data], axis=1)
 
+        # Set plot data for prediction use
+        global g_plot_data
+        g_plot_data = plot_data
+
         return plot_data, centers
     except:
         print("Data set could not be loaded.")
         return None
+
+
+def find_cluster(items):
+    log_data = np.log(pd.DataFrame(items['customers']))
+    # check global plot data
+    if (g_pre_cluster_type is None) or ((g_pre_cluster_type is not None) and
+                                            (g_pre_cluster_type['id'] != items['type']['id'])):
+        cluster_results(items['type'])
+    data_set = []
+    feature_set = []
+    count = 0
+    for index, cluster in enumerate(g_log_data.get_values()):
+        if index not in g_duplicate_list:
+            data_set.append(cluster)
+            feature_set.append(np.int32(g_plot_data.get_values()[count][0]))
+            count += 1
+
+    clf = SVC(kernel='linear', C=1.0)
+    clf.fit(data_set, feature_set)
+    prediction = clf.predict(log_data.get_values()[0])
+    return prediction[0]

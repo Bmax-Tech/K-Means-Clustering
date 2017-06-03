@@ -10,7 +10,7 @@ app = Flask(__name__)
 # ----------------------------------------------------------------------------------------------------------------------
 
 @app.route("/getData", methods=['POST'])
-def index():
+def get_data():
     plot_data, centers = algorithm.cluster_results(request.json)
     res = {}
     res['center_points'] = []
@@ -33,6 +33,14 @@ def index():
         res['center_points'].append(temp)
 
     return jsonify(res)
+
+
+@app.route("/getCluster", methods=['POST'])
+def get_cluster():
+    prediction = algorithm.find_cluster(request.json)
+    temp = {}
+    temp['cluster'] = np.int32(prediction).item()
+    return jsonify(temp)
 
 
 if __name__ == "__main__":
