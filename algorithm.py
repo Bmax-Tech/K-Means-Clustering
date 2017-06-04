@@ -6,6 +6,7 @@ from sklearn.mixture import GaussianMixture
 from sklearn.svm import SVC
 from IPython.display import display
 from sklearn.decomposition import PCA
+from sklearn.cluster import KMeans
 
 # global variables
 g_pre_cluster_type = None
@@ -25,14 +26,11 @@ def cluster_results(cluster_type):
         display(data.describe())
 
         # selected few data samples from dataset to further analysis
-        # 43: Very low "Fresh" and very high "Grocery"
-        # 12: Very low "Frozen" and very high "Fresh"
-        # 39: Very high "Frozen" and very low "Detergens_Paper"
         indices = [43, 12, 39]
 
         # Create Data frames for the selected samples
         samples = pd.DataFrame(data.loc[indices], columns=data.columns).reset_index(drop=True)
-        print("Chosen samples of wholesale customers dataset:")
+        print("Chosen samples of customers dataset:")
         display(samples)
 
         # Scale the data using the natural logarithm
@@ -94,8 +92,10 @@ def cluster_results(cluster_type):
 
         # Make clusters
         cluster = GaussianMixture(n_components=cluster_type['id']).fit(reduced_data)
+        # cluster = KMeans(n_clusters=cluster_type['id']).fit(reduced_data) # with K-Means clustering
         predictions = cluster.predict(reduced_data)
         centers = cluster.means_
+        # centers = cluster.cluster_centers_ # with K-Means clustering
 
         # Display the results of the clustering from implementation
         utility.cluster_results(reduced_data, predictions, centers, pca_samples)

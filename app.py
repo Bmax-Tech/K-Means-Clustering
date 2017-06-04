@@ -15,7 +15,6 @@ def get_data():
     res = {}
     res['center_points'] = []
     res['data_points'] = []
-    # for i, clusters in plot_data.groupby('Cluster'):
     count = 1
     for cluster in plot_data.get_values():
         temp = {}
