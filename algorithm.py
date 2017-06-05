@@ -133,5 +133,6 @@ def find_cluster(items):
 
     clf = SVC(kernel='linear', C=1.0)
     clf.fit(data_set, feature_set)
-    prediction = clf.predict(log_data.get_values()[0])
+    log_data = np.array(log_data.get_values()[0]).reshape((1, -1))
+    prediction = clf.predict(log_data)
     return prediction[0]
