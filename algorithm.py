@@ -4,9 +4,9 @@ import utility.utility as utility
 import itertools as itr
 from sklearn.mixture import GaussianMixture
 from sklearn.svm import SVC
-from IPython.display import display
+# from IPython.display import display
 from sklearn.decomposition import PCA
-from sklearn.cluster import KMeans
+# from sklearn.cluster import KMeans
 
 # global variables
 g_pre_cluster_type = None
@@ -19,11 +19,11 @@ def cluster_results(cluster_type):
     try:
         global g_pre_cluster_type
         g_pre_cluster_type = cluster_type
-        data = pd.read_csv('data/data_set_3.csv')
+        data = pd.read_csv('/workspace/K-Means-Clustering/data/data_set_3.csv')
         data.drop(['Region', 'Channel'], axis=1, inplace=True)
         print("Wholesale customer dataset has {} samples with {} features each.".format(*data.shape))
         # Display a description of the dataset
-        display(data.describe())
+        # display(data.describe())
 
         # selected few data samples from dataset to further analysis
         indices = [43, 12, 39]
@@ -31,7 +31,7 @@ def cluster_results(cluster_type):
         # Create Data frames for the selected samples
         samples = pd.DataFrame(data.loc[indices], columns=data.columns).reset_index(drop=True)
         print("Chosen samples of customers dataset:")
-        display(samples)
+        # display(samples)
 
         # Scale the data using the natural logarithm
         log_data = np.log(data)
@@ -88,7 +88,7 @@ def cluster_results(cluster_type):
         # Create a DataFrame for the reduced data
         reduced_data = pd.DataFrame(reduced_data, columns=['Dimension 1', 'Dimension 2'])
         # Display sample log-data after applying PCA transformation in two dimensions
-        display(pd.DataFrame(np.round(pca_samples, 4), columns=['Dimension 1', 'Dimension 2']))
+        # display(pd.DataFrame(np.round(pca_samples, 4), columns=['Dimension 1', 'Dimension 2']))
 
         # Make clusters
         cluster = GaussianMixture(n_components=cluster_type['id']).fit(reduced_data)

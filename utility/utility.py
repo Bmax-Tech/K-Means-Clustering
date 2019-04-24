@@ -25,13 +25,13 @@ def cluster_results(reduced_data, preds, centers, pca_samples):
     # Set plot title
     ax.set_title(
         "PCA-Reduced Data - Centroids Marked by Number\nTransformed Sample Data Marked by X")
-    fig.savefig('images/app_3/plot_map.png')
+    # fig.savefig('images/app_3/plot_map.png')
 
 
 def channel_results(reduced_data, outliers, pca_samples):
     # Check that the dataset is loadable
     try:
-        full_data = pd.read_csv("../data/data_set_3.csv")
+        full_data = pd.read_csv("/workspace/K-Means-Clustering/data/data_set_3.csv")
     except:
         print
         "Dataset could not be loaded. Is the file missing?"
@@ -59,4 +59,4 @@ def channel_results(reduced_data, outliers, pca_samples):
 
     # Set plot title
     ax.set_title("PCA-Reduced Data Labeled by 'Channel'\nTransformed Sample Data Circled")
-    fig.savefig('images/app_3/plot_map_2.png')
+    # fig.savefig('images/app_3/plot_map_2.png')
